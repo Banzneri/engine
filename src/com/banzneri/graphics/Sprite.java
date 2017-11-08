@@ -32,6 +32,6 @@ public class Sprite extends GameObject {
 
     public void draw(GraphicsContext gc) {
         //gc.fillRect(getX(), getY(), getWidth(), getHeight());
-        gc.drawImage(texture.getImage(), getX(), getY(), getWidth(), getHeight());
+        //gc.drawImage(texture.getImage(), getX(), getY(), getWidth(), getHeight());
     }
 }

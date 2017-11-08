@@ -21,11 +21,11 @@ public abstract class Game extends Application {
     abstract public void update();
 
     public double getWidth() {
-        return stage.getWidth();
+        return getScreen().getWidth();
     }
 
     public double getHeight() {
-        return stage.getHeight();
+        return getScreen().getHeight();
     }
 
     public void setWidth(double width) {

@@ -62,7 +62,7 @@ public class TestInputListener implements InputListener {
         }
     }
 
-    public void move() {
+    private void move() {
         rect.setSpeedY(0);
         rect.setSpeedX(0);
 

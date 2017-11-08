@@ -75,14 +75,14 @@ public class Screen extends Scene {
     }
 
     public void render() {
-        gc.clearRect(0, 0, getWidth(), getHeight());
-        gcbackground.clearRect(0, 0, getWidth(), getHeight());
-        drawBackground();
-        gameObjects.forEach(o -> o.draw(gc));
+
     }
 
     public void update() {
-        gameObjects.forEach(GameObject::move);
+        for(int i = 0; i < gameObjects.size(); i++) {
+            gameObjects.get(i).move();
+
+        }
         host.update();
     }
 
@@ -94,8 +94,9 @@ public class Screen extends Scene {
     public void addGameObject(GameObject gameObject)
     {
         gameObject.setRectangle(GameObject.createRectangle(gameObject));
-        rectangles.add(gameObject.getRectangle());
         gameObjects.add(gameObject);
+        rectangles.add(gameObject.getRectangle());
+        root.getChildren().add(rectangles.get(rectangles.size()-1));
     }
 
     public void removeGameObject(GameObject gameObject) {
@@ -184,5 +185,9 @@ public class Screen extends Scene {
 
     public void setRectangles(ArrayList<Rectangle> rectangles) {
         this.rectangles = rectangles;
+    }
+
+    public void addAll() {
+        rectangles.forEach(e -> root.getChildren().add(e));
     }
 }

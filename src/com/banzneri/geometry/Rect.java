@@ -25,6 +25,7 @@ public class Rect extends GameObject {
         setX(0);
         setY(0);
         setRotation(0);
+        setRectangle(createRectangle(this));
 
         topLeft = new Point2D(getX(), getY());
         topRight = new Point2D(getX() + getWidth(), getY());
@@ -47,11 +48,7 @@ public class Rect extends GameObject {
 
     @Override
     public void draw(GraphicsContext gc) {
-        gc.save();
-        gc.transform(new Affine(new Rotate(getRotation(), getX(), getY())));
-        gc.setFill(getColor());
-        gc.fillRect(getX(), getY(), getWidth(), getHeight());
-        gc.restore();
+
     }
 
     public Color getColor() {

@@ -16,28 +16,22 @@ public abstract class GameObject {
     private double height;
     private boolean collides;
     private double rotation;
-    private Rectangle rectangle;
+    private Rectangle rectangle = createRectangle(this);
     private Point2D speed = Point2D.ZERO;
     private Point2D acceleration = Point2D.ZERO;
 
     abstract public void draw(GraphicsContext gc);
 
     public void move() {
+        rectangle.relocate(getX(), getY());
         setX(getX() + speed.getX());
         setY(getY() + speed.getY());
-        rectangle.setX(getX());
-        rectangle.setY(getY());
     }
 
     public boolean collidesWith(GameObject o) {
-        Rect r1 = new Rect(getX(), getY(), getWidth(), getHeight());
-        Rect r2 = new Rect(o.getX(), o.getY(), o.getWidth(), o.getHeight());
-        Rectangle rect1 = createRectangle(r1);
-        Rectangle rect2 = createRectangle(r2);
+        Rectangle rect1 = getRectangle();
+        Rectangle rect2 = o.getRectangle();
         Shape intersect = Shape.intersect(rect1, rect2);
-        Group root = new Group();
-        root.getChildren().add(rect1);
-        root.getChildren().add(rect2);
 
         return intersect.getBoundsInLocal().getWidth() != -1;
     }
@@ -51,6 +45,7 @@ public abstract class GameObject {
     }
 
     public void setX(double x) {
+        rectangle.setX(x);
         this.x = x;
     }
 
@@ -59,6 +54,7 @@ public abstract class GameObject {
     }
 
     public void setY(double y) {
+        rectangle.setY(y);
         this.y = y;
     }
 
@@ -67,6 +63,7 @@ public abstract class GameObject {
     }
 
     public void setWidth(double width) {
+        rectangle.setWidth(width);
         this.width = width;
     }
 
@@ -75,6 +72,7 @@ public abstract class GameObject {
     }
 
     public void setHeight(double height) {
+        rectangle.setHeight(height);
         this.height = height;
     }
 
@@ -88,8 +86,7 @@ public abstract class GameObject {
 
     public void setRotation(double rotation) {
         this.rotation = rotation;
-        Rotate rotate = new Rotate(rotation, getX(), getY());
-        rectangle = createRectangle(this);
+        setRectangle(createRectangle(this));
     }
 
     public Rectangle getRectangle() {
@@ -135,9 +132,12 @@ public abstract class GameObject {
     public static Rectangle createRectangle(GameObject gameObject) {
         Rectangle rectangle = new Rectangle(gameObject.getX(), gameObject.getY(),
                                             gameObject.getWidth(), gameObject.getHeight());
-        Rotate rotate = new Rotate(gameObject.getRotation(), gameObject.getX(), gameObject.getY());
-
-        rectangle.getTransforms().add(rotate);
+        rectangle.setRotate(gameObject.getRotation());
         return rectangle;
+    }
+
+    public static Rectangle createNonRotatedRectangle(GameObject object) {
+         return new Rectangle(object.getX(), object.getY(),
+                object.getWidth(), object.getHeight());
     }
 }
