@@ -82,8 +82,8 @@ public class Screen extends Scene {
     }
 
     public void update() {
-        gameObjects.forEach(GameObject::move);
         host.update();
+        gameObjects.forEach(GameObject::move);
     }
 
     public void addListener(InputListener listener) {

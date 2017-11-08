@@ -32,7 +32,7 @@ public class TestGame extends Game {
 
     @Override
     public void update() {
-        checkCollision();
+        //checkCollision();
     }
 
     public void playSound() {

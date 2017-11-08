@@ -30,14 +30,7 @@ public abstract class GameObject {
     }
 
     public boolean collidesWith(GameObject o) {
-        Rect r1 = new Rect(getX(), getY(), getWidth(), getHeight());
-        Rect r2 = new Rect(o.getX(), o.getY(), o.getWidth(), o.getHeight());
-        Rectangle rect1 = createRectangle(r1);
-        Rectangle rect2 = createRectangle(r2);
-        Shape intersect = Shape.intersect(rect1, rect2);
-        Group root = new Group();
-        root.getChildren().add(rect1);
-        root.getChildren().add(rect2);
+        Shape intersect = Shape.intersect(getRectangle(), o.getRectangle());
 
         return intersect.getBoundsInLocal().getWidth() != -1;
     }
@@ -88,7 +81,6 @@ public abstract class GameObject {
 
     public void setRotation(double rotation) {
         this.rotation = rotation;
-        Rotate rotate = new Rotate(rotation, getX(), getY());
         rectangle = createRectangle(this);
     }
 
@@ -135,9 +127,7 @@ public abstract class GameObject {
     public static Rectangle createRectangle(GameObject gameObject) {
         Rectangle rectangle = new Rectangle(gameObject.getX(), gameObject.getY(),
                                             gameObject.getWidth(), gameObject.getHeight());
-        Rotate rotate = new Rotate(gameObject.getRotation(), gameObject.getX(), gameObject.getY());
-
-        rectangle.getTransforms().add(rotate);
+        rectangle.setRotate(gameObject.getRotation());
         return rectangle;
     }
 }

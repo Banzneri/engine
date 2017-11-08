@@ -20,10 +20,10 @@ public class Rect extends GameObject {
     private Point2D bottomRight;
 
     public Rect(double width, double height) {
-        setWidth(width);
-        setHeight(height);
         setX(0);
         setY(0);
+        setWidth(width);
+        setHeight(height);
         setRotation(0);
 
         topLeft = new Point2D(getX(), getY());
