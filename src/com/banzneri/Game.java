@@ -1,24 +1,20 @@
 package com.banzneri;
 
+import com.banzneri.graphics.GameObject;
 import javafx.application.Application;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
 
 public abstract class Game extends Application {
     private Stage stage;
     private Screen screen;
 
-    public void init() {
-    };
-
     abstract public void start(Stage primaryStage) throws Exception;
 
-    public void initGame() {
-
-    }
-
-    public void startGame(Stage stage) {
-        this.stage = stage;
-        this.stage.show();
+    public void startGame(Stage stage, Screen screen) {
+        setStage(stage);
+        getStage().show();
         setScreen(screen);
     }
 
@@ -55,5 +51,9 @@ public abstract class Game extends Application {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public ArrayList<GameObject> getGameObjects() {
+        return getScreen().getGameObjects();
     }
 }

@@ -1,20 +1,24 @@
 package com.banzneri.graphics;
 
-import com.banzneri.input.InputListener;
+import com.banzneri.geometry.Rect;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.ImageView;
 
-public class Sprite extends Rect {
+public class Sprite extends GameObject {
     private Texture texture;
-    private InputListener listener;
 
     public Sprite(Texture texture, Rect rect) {
-        super(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+        setX(rect.getX());
+        setY(rect.getY());
+        setWidth(rect.getWidth());
+        setHeight(rect.getHeight());
         setTexture(texture);
     }
 
     public Sprite(double x, double y, double width, double height, Texture texture) {
-        super(x, y, width, height);
+        setX(x);
+        setX(y);
+        setWidth(width);
+        setHeight(height);
         setTexture(texture);
     }
 
@@ -29,9 +33,5 @@ public class Sprite extends Rect {
     public void draw(GraphicsContext gc) {
         //gc.fillRect(getX(), getY(), getWidth(), getHeight());
         gc.drawImage(texture.getImage(), getX(), getY(), getWidth(), getHeight());
-    }
-
-    public void addListener(InputListener listener) {
-
     }
 }

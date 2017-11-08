@@ -1,7 +1,6 @@
 package com.banzneri.engine;
 
 import com.banzneri.Screen;
-import com.banzneri.graphics.GameObject;
 import javafx.animation.AnimationTimer;
 
 public class GameLoop extends AnimationTimer {

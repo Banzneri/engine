@@ -10,12 +10,14 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
 public class Screen extends Scene {
     private ArrayList<GameObject> gameObjects;
+    private ArrayList<Rectangle> rectangles;
     private GraphicsContext gc;
     private GraphicsContext gcbackground;
     private InputListener listener;
@@ -25,21 +27,19 @@ public class Screen extends Scene {
     private Game host;
     private GameLoop gameLoop;
     private Music music;
+    private Group root;
 
     public Screen(double width, double height, Game host) {
         super(new Group(), width, height);
         gameObjects = new ArrayList<>();
+        rectangles = new ArrayList<>();
         canvas = new Canvas(width, height);
         canvasBackground = new Canvas(width, height);
         gc = canvas.getGraphicsContext2D();
         gcbackground = canvasBackground.getGraphicsContext2D();
         this.host = host;
-
-        Group root = new Group();
-        root.getChildren().add(canvasBackground);
-        root.getChildren().add(canvas);
-        setRoot(root);
-
+        initRoot();
+        initRectangles();
         gameLoop = new GameLoop(this);
         gameLoop.start();
     }
@@ -49,20 +49,18 @@ public class Screen extends Scene {
         gameObjects = new ArrayList<>();
     }
 
-    public void render() {
-        gc.clearRect(0, 0, getWidth(), getHeight());
-        gcbackground.clearRect(0, 0, getWidth(), getHeight());
-        Optional<Image> bg = Optional.ofNullable(backGroundImage);
-        bg.ifPresent(e -> gcbackground.drawImage(backGroundImage, 0, 0, getWidth(), getHeight()));
-        gameObjects.forEach(o -> o.draw(gc));
+    private void initRectangles() {
+        gameObjects.forEach(e -> rectangles.add(e.getRectangle()));
     }
 
-    public void update() {
-        gameObjects.forEach(GameObject::move);
-        host.update();
+    private void initRoot() {
+        root = new Group();
+        root.getChildren().add(canvasBackground);
+        root.getChildren().add(canvas);
+        setRoot(root);
     }
 
-    public void initInput() {
+    private void initInput() {
         Optional<InputListener> l = Optional.ofNullable(listener);
         l.ifPresent(e -> {
             setOnKeyPressed(e::onKeyPressed);
@@ -71,8 +69,37 @@ public class Screen extends Scene {
         });
     }
 
-    public void addGameObject(GameObject gameObject) {
+    private void drawBackground() {
+        Optional<Image> bg = Optional.ofNullable(backGroundImage);
+        bg.ifPresent(e -> gcbackground.drawImage(e, 0, 0, getWidth(), getHeight()));
+    }
+
+    public void render() {
+        gc.clearRect(0, 0, getWidth(), getHeight());
+        gcbackground.clearRect(0, 0, getWidth(), getHeight());
+        drawBackground();
+        gameObjects.forEach(o -> o.draw(gc));
+    }
+
+    public void update() {
+        gameObjects.forEach(GameObject::move);
+        host.update();
+    }
+
+    public void addListener(InputListener listener) {
+        this.listener = listener;
+        initInput();
+    }
+
+    public void addGameObject(GameObject gameObject)
+    {
+        gameObject.setRectangle(GameObject.createRectangle(gameObject));
+        rectangles.add(gameObject.getRectangle());
         gameObjects.add(gameObject);
+    }
+
+    public void removeGameObject(GameObject gameObject) {
+        gameObjects.remove(gameObject);
     }
 
     public ArrayList<GameObject> getGameObjects() {
@@ -139,11 +166,6 @@ public class Screen extends Scene {
         this.gameLoop = gameLoop;
     }
 
-    public void addListener(InputListener listener) {
-        this.listener = listener;
-        initInput();
-    }
-
     public float getDelta() {
         return gameLoop.delta();
     }
@@ -154,5 +176,13 @@ public class Screen extends Scene {
 
     public void setMusic(Music music) {
         this.music = music;
+    }
+
+    public ArrayList<Rectangle> getRectangles() {
+        return rectangles;
+    }
+
+    public void setRectangles(ArrayList<Rectangle> rectangles) {
+        this.rectangles = rectangles;
     }
 }
