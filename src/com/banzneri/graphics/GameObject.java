@@ -36,27 +36,23 @@ public abstract class GameObject {
         setX(getX() + getSpeedX());
         setY(getY() + getSpeedY());
         setLocation(new Point2D(getX(), getY()));
-        rectangle.setTranslateX(getX());
-        rectangle.setTranslateY(getY());
     }
 
     abstract public void draw(GraphicsContext gc);
 
     public void moveAlternative() {
-        setSpeed(getSpeed().add(getAcceleration()));
-        setLocation(getLocation().add(getSpeed()));
         rectangle.setTranslateX(getX());
         rectangle.setTranslateY(getY());
+        setSpeed(getSpeed().add(getAcceleration()));
+        setLocation(getLocation().add(getSpeed()));
         setAcceleration(getAcceleration().multiply(0));
     }
 
     public boolean collidesWith(GameObject o) {
         if(!isCollides() || !o.isCollides())
             return false;
-        Rectangle rect1 = getRectangle();
-        Rectangle rect2 = o.getRectangle();
 
-        Shape intersect = Shape.intersect(rect1, rect2);
+        Shape intersect = Shape.intersect(getRectangle(), o.getRectangle());
 
         return intersect.getBoundsInLocal().getWidth() != -1;
     }
@@ -70,7 +66,7 @@ public abstract class GameObject {
     }
 
     public void setX(double x) {
-        rectangle.setX(x);
+        rectangle.setTranslateX(x);
         this.x = x;
     }
 
@@ -79,7 +75,7 @@ public abstract class GameObject {
     }
 
     public void setY(double y) {
-        rectangle.setY(y);
+        rectangle.setTranslateY(y);
         this.y = y;
     }
 
