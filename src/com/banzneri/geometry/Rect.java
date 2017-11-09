@@ -5,6 +5,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 
@@ -20,11 +21,12 @@ public class Rect extends GameObject {
     private Point2D bottomRight;
 
     public Rect(double width, double height) {
-        setX(0);
-        setY(0);
         setWidth(width);
         setHeight(height);
+        setX(0);
+        setY(0);
         setRotation(0);
+        setRectangle(new Rectangle(getX(), getY(), getWidth(), getHeight()));
 
         topLeft = new Point2D(getX(), getY());
         topRight = new Point2D(getX() + getWidth(), getY());

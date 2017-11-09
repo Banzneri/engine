@@ -91,11 +91,10 @@ public class Screen extends Scene {
         initInput();
     }
 
-    public void addGameObject(GameObject gameObject)
-    {
-        gameObject.setRectangle(GameObject.createRectangle(gameObject));
+    public void addGameObject(GameObject gameObject) {
         rectangles.add(gameObject.getRectangle());
         gameObjects.add(gameObject);
+        root.getChildren().add(gameObject.getRectangle());
     }
 
     public void removeGameObject(GameObject gameObject) {

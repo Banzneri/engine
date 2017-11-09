@@ -1,13 +1,12 @@
 package com.banzneri.graphics;
 
-import com.banzneri.geometry.Rect;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 
 public abstract class GameObject {
     private double x;
@@ -16,7 +15,7 @@ public abstract class GameObject {
     private double height;
     private boolean collides;
     private double rotation;
-    private Rectangle rectangle;
+    private Rectangle rectangle = new Rectangle();
     private Point2D speed = Point2D.ZERO;
     private Point2D acceleration = Point2D.ZERO;
 
@@ -25,8 +24,6 @@ public abstract class GameObject {
     public void move() {
         setX(getX() + speed.getX());
         setY(getY() + speed.getY());
-        rectangle.setX(getX());
-        rectangle.setY(getY());
     }
 
     public boolean collidesWith(GameObject o) {
@@ -44,6 +41,7 @@ public abstract class GameObject {
     }
 
     public void setX(double x) {
+        rectangle.setTranslateX(x);
         this.x = x;
     }
 
@@ -52,6 +50,7 @@ public abstract class GameObject {
     }
 
     public void setY(double y) {
+        rectangle.setTranslateY(y);
         this.y = y;
     }
 
@@ -60,6 +59,7 @@ public abstract class GameObject {
     }
 
     public void setWidth(double width) {
+        rectangle.setWidth(width);
         this.width = width;
     }
 
@@ -68,6 +68,7 @@ public abstract class GameObject {
     }
 
     public void setHeight(double height) {
+        rectangle.setHeight(height);
         this.height = height;
     }
 
@@ -81,7 +82,12 @@ public abstract class GameObject {
 
     public void setRotation(double rotation) {
         this.rotation = rotation;
-        rectangle = createRectangle(this);
+        Rotate rotate = new Rotate();
+        rotate.setAngle(getRotation());
+        rotate.setPivotX(0);
+        rotate.setPivotY(0);
+        rectangle.getTransforms().add(new Affine(rotate));
+        setRectangle(rectangle);
     }
 
     public Rectangle getRectangle() {
@@ -127,7 +133,9 @@ public abstract class GameObject {
     public static Rectangle createRectangle(GameObject gameObject) {
         Rectangle rectangle = new Rectangle(gameObject.getX(), gameObject.getY(),
                                             gameObject.getWidth(), gameObject.getHeight());
-        rectangle.setRotate(gameObject.getRotation());
+        Rotate rotate = new Rotate();
+        rotate.setAngle(gameObject.getRotation());
+        rectangle.getTransforms().add(new Affine(rotate));
         return rectangle;
     }
 }

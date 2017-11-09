@@ -1,13 +1,14 @@
 package com.banzneri.TestGame;
 
+import com.banzneri.geometry.Rect;
 import com.banzneri.graphics.Sprite;
 import com.banzneri.graphics.Texture;
 
-public class TestPlayer extends Sprite {
+public class TestPlayer extends Rect {
     private TestGame host;
 
     public TestPlayer(TestGame host) {
-        super(50, 50, 50, 50, new Texture("/brick.png"));
+        super(50, 50, 50, 50);
         setHost(host);
     }
 

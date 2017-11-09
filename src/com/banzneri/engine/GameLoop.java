@@ -15,8 +15,8 @@ public class GameLoop extends AnimationTimer {
     @Override
     public void handle(long now) {
         delta = (float) ((now - before) / 1E9);
-        host.update();
         host.render();
+        host.update();
         before = now;
     }
 
