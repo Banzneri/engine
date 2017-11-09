@@ -3,6 +3,10 @@ package com.banzneri.particles;
 import com.banzneri.graphics.GameObject;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Rotate;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +20,15 @@ public class Particle extends GameObject {
         setSpeedY(velocity.getY());
         setAcceleration(acceleration);
         setLifeSpan(lifeSpanInSeconds);
+    }
+
+    @Override
+    public void draw(GraphicsContext gc) {
+        gc.save();
+        gc.transform(new Affine(new Rotate(getRotation(), getX(), getY())));
+        gc.setFill(Color.RED);
+        gc.fillRect(getX(), getY(), getWidth(), getHeight());
+        gc.restore();
     }
 
     public double getLifeSpan() {

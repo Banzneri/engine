@@ -2,7 +2,11 @@ package com.banzneri.graphics;
 
 import com.banzneri.geometry.Rect;
 import javafx.scene.Node;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Rotate;
 
 public class Sprite extends GameObject {
     private Texture texture;
@@ -27,6 +31,15 @@ public class Sprite extends GameObject {
         setY(getY() + getSpeedY());
         getView().setX(getX());
         getView().setY(getY());
+    }
+
+    @Override
+    public void draw(GraphicsContext gc) {
+        gc.save();
+        gc.transform(new Affine(new Rotate(getRotation(), getX(), getY())));
+        gc.setFill(Color.RED);
+        gc.fillRect(getX(), getY(), getWidth(), getHeight());
+        gc.restore();
     }
 
     public Texture getTexture() {

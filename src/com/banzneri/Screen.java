@@ -25,12 +25,14 @@ public abstract class Screen extends Scene {
     private GameLoop gameLoop;
     private Music music;
     private Group root;
-    private Canvas canvas = new Canvas();
-    private GraphicsContext gc = canvas.getGraphicsContext2D();
+    private Canvas canvas;
+    private GraphicsContext gc;
 
     public Screen(double width, double height, Game host) {
         super(new Group(), width, height);
         setGameObjects(new ArrayList<>());
+        canvas = new Canvas(width, height);
+        setGc(canvas.getGraphicsContext2D());
         setHost(host);
         initRoot();
         setGameLoop(new GameLoop(this));
@@ -66,8 +68,10 @@ public abstract class Screen extends Scene {
     abstract public void update();
 
     public void moveObjects() {
+        gc.clearRect(0, 0, getWidth(), getHeight());
         gameObjects.forEach(GameObject::move);
         particles.forEach(GameObject::moveAlternative);
+        gameObjects.forEach(e -> e.draw(gc));
     }
 
     public void addListener(InputListener listener) {
@@ -82,12 +86,12 @@ public abstract class Screen extends Scene {
         else {
             gameObjects.add(gameObject);
         }
-        root.getChildren().add(gameObject.getNode());
+        //root.getChildren().add(gameObject.getNode());
     }
 
     public void addGameObjects(ArrayList<GameObject> objects) {
         gameObjects.addAll(objects);
-        objects.forEach(e -> root.getChildren().add(e.getNode()));
+        //objects.forEach(e -> root.getChildren().add(e.getNode()));
     }
 
     public void removeGameObject(GameObject gameObject) {
@@ -96,14 +100,14 @@ public abstract class Screen extends Scene {
         } else {
             gameObjects.remove(gameObject);
         }
-        root.getChildren().remove(gameObject.getNode());
+        //root.getChildren().remove(gameObject.getNode());
     }
 
     public void removeGameObjects(ArrayList<GameObject> objects) {
         ArrayList<Node> toRemove = new ArrayList<>();
         objects.forEach(e -> toRemove.add(e.getNode()));
         gameObjects.removeAll(objects);
-        root.getChildren().removeAll(toRemove);
+        //root.getChildren().removeAll(toRemove);
     }
 
     public ArrayList<GameObject> getGameObjects() {

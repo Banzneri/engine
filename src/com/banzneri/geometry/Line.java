@@ -2,6 +2,10 @@ package com.banzneri.geometry;
 
 import com.banzneri.graphics.GameObject;
 import javafx.scene.Node;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Rotate;
 
 public class Line extends GameObject {
     private javafx.scene.shape.Line line;
@@ -9,6 +13,15 @@ public class Line extends GameObject {
     public Line(double startX, double startY, double endX, double endY) {
         super(0, 0, 0, 0);
         line = new javafx.scene.shape.Line(startX, startY, endX, endY);
+    }
+
+    @Override
+    public void draw(GraphicsContext gc) {
+        gc.save();
+        gc.setStroke(Color.BLUE);
+        gc.setLineWidth(5);
+        gc.strokeLine(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
+        gc.restore();
     }
 
     @Override

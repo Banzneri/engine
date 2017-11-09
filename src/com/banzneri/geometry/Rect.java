@@ -3,8 +3,11 @@ package com.banzneri.geometry;
 import com.banzneri.graphics.GameObject;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Rotate;
 
 public class Rect extends GameObject {
     private Color color;
@@ -35,6 +38,15 @@ public class Rect extends GameObject {
 
     public Rect(double x, double y, double width, double height) {
         super(x, y, width, height);
+    }
+
+    @Override
+    public void draw(GraphicsContext gc) {
+        gc.save();
+        gc.transform(new Affine(new Rotate(getRotation(), getX(), getY())));
+        gc.setFill(Color.RED);
+        gc.fillRect(getRectangle().getTranslateX(), getRectangle().getTranslateY(), getWidth(), getHeight());
+        gc.restore();
     }
 
     @Override

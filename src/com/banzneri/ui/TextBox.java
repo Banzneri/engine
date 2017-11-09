@@ -2,6 +2,7 @@ package com.banzneri.ui;
 
 import com.banzneri.graphics.GameObject;
 import javafx.scene.Node;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Text;
 
 public class TextBox extends GameObject {
@@ -10,6 +11,11 @@ public class TextBox extends GameObject {
     public TextBox(double x, double y, double width, double height, String text) {
         super(x, y, width, height);
         setText(text);
+    }
+
+    @Override
+    public void draw(GraphicsContext gc) {
+
     }
 
     public String getText() {

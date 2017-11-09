@@ -1,10 +1,12 @@
 package com.banzneri.graphics;
 
-import com.banzneri.geometry.Rect;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Rotate;
 
 import java.util.ArrayList;
 
@@ -37,6 +39,8 @@ public abstract class GameObject {
         rectangle.setX(getX());
         rectangle.setY(getY());
     }
+
+    abstract public void draw(GraphicsContext gc);
 
     public void moveAlternative() {
         setSpeed(getSpeed().add(getAcceleration()));
@@ -157,7 +161,9 @@ public abstract class GameObject {
     public static Rectangle createRectangle(GameObject gameObject) {
         Rectangle rectangle = new Rectangle(gameObject.getX(), gameObject.getY(),
                                             gameObject.getWidth(), gameObject.getHeight());
-        rectangle.setRotate(gameObject.getRotation());
+        Rotate rotate = new Rotate();
+        rotate.setAngle(gameObject.getRotation());
+        rectangle.getTransforms().add(new Affine(rotate));
         return rectangle;
     }
 
