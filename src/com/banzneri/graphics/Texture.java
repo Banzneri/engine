@@ -1,6 +1,7 @@
 package com.banzneri.graphics;
 
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class Texture {
     private Image image;

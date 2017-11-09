@@ -2,35 +2,56 @@ package com.banzneri.graphics;
 
 import com.banzneri.geometry.Rect;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-import javafx.scene.transform.Affine;
-import javafx.scene.transform.Rotate;
+
+import java.util.ArrayList;
 
 public abstract class GameObject {
     private double x;
     private double y;
     private double width;
     private double height;
-    private boolean collides;
-    private double rotation;
+    private boolean collides = true;
+    private double rotation = 0;
     private Rectangle rectangle = createRectangle(this);
+    private Point2D location;
     private Point2D speed = Point2D.ZERO;
     private Point2D acceleration = Point2D.ZERO;
+    private ArrayList<Point2D> forces = new ArrayList<>();
+    private Node node;
 
-    abstract public void draw(GraphicsContext gc);
+    public GameObject(double x, double y, double width, double height) {
+        setX(x);
+        setY(y);
+        location = new Point2D(x, y);
+        setWidth(width);
+        setHeight(height);
+    }
 
     public void move() {
-        rectangle.relocate(getX(), getY());
-        setX(getX() + speed.getX());
-        setY(getY() + speed.getY());
+        setX(getX() + getSpeedX());
+        setY(getY() + getSpeedY());
+        setLocation(new Point2D(getX(), getY()));
+        rectangle.setX(getX());
+        rectangle.setY(getY());
+    }
+
+    public void moveAlternative() {
+        setSpeed(getSpeed().add(getAcceleration()));
+        setLocation(getLocation().add(getSpeed()));
+        rectangle.setX(getLocation().getX());
+        rectangle.setY(getLocation().getY());
+        setAcceleration(getAcceleration().multiply(0));
     }
 
     public boolean collidesWith(GameObject o) {
+        if(!isCollides() || !o.isCollides())
+            return false;
         Rectangle rect1 = getRectangle();
         Rectangle rect2 = o.getRectangle();
+
         Shape intersect = Shape.intersect(rect1, rect2);
 
         return intersect.getBoundsInLocal().getWidth() != -1;
@@ -105,6 +126,10 @@ public abstract class GameObject {
         speed = new Point2D(x, y);
     }
 
+    public void setSpeed(Point2D speed) {
+        this.speed = speed;
+    }
+
     public double getSpeedX() {
         return speed.getX();
     }
@@ -139,5 +164,25 @@ public abstract class GameObject {
     public static Rectangle createNonRotatedRectangle(GameObject object) {
          return new Rectangle(object.getX(), object.getY(),
                 object.getWidth(), object.getHeight());
+    }
+
+    public Node getNode() {
+        return node;
+    }
+
+    public void setNode(Node node) {
+        this.node = node;
+    }
+
+    public Point2D getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point2D location) {
+        this.location = location;
+    }
+
+    public Point2D getCenterLocation() {
+        return new Point2D(getX() + (getWidth() / 2), getY() + (getWidth() / 2));
     }
 }

@@ -4,43 +4,36 @@ import com.banzneri.audio.Music;
 import com.banzneri.engine.GameLoop;
 import com.banzneri.graphics.GameObject;
 import com.banzneri.input.InputListener;
+import com.banzneri.particles.Particle;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class Screen extends Scene {
+public abstract class Screen extends Scene {
     private ArrayList<GameObject> gameObjects;
-    private ArrayList<Rectangle> rectangles;
-    private GraphicsContext gc;
-    private GraphicsContext gcbackground;
+    private ArrayList<Particle> particles = new ArrayList<>();
     private InputListener listener;
     private Image backGroundImage;
-    private Canvas canvas;
-    private Canvas canvasBackground;
     private Game host;
     private GameLoop gameLoop;
     private Music music;
     private Group root;
+    private Canvas canvas = new Canvas();
+    private GraphicsContext gc = canvas.getGraphicsContext2D();
 
     public Screen(double width, double height, Game host) {
         super(new Group(), width, height);
-        gameObjects = new ArrayList<>();
-        rectangles = new ArrayList<>();
-        canvas = new Canvas(width, height);
-        canvasBackground = new Canvas(width, height);
-        gc = canvas.getGraphicsContext2D();
-        gcbackground = canvasBackground.getGraphicsContext2D();
-        this.host = host;
+        setGameObjects(new ArrayList<>());
+        setHost(host);
         initRoot();
-        initRectangles();
-        gameLoop = new GameLoop(this);
+        setGameLoop(new GameLoop(this));
         gameLoop.start();
     }
 
@@ -49,13 +42,8 @@ public class Screen extends Scene {
         gameObjects = new ArrayList<>();
     }
 
-    private void initRectangles() {
-        gameObjects.forEach(e -> rectangles.add(e.getRectangle()));
-    }
-
     private void initRoot() {
         root = new Group();
-        root.getChildren().add(canvasBackground);
         root.getChildren().add(canvas);
         setRoot(root);
     }
@@ -65,25 +53,21 @@ public class Screen extends Scene {
         l.ifPresent(e -> {
             setOnKeyPressed(e::onKeyPressed);
             setOnKeyReleased(e::onKeyUp);
+            setOnMousePressed(e::onMousePressed);
             setOnMouseClicked(e::onMouseClicked);
+            setOnMouseMoved(e::onMouseMoved);
+            setOnMouseDragged(e::onMouseDragged);
+            setOnMouseDragEntered(e::onMouseDragStart);
+            setOnMouseDragExited(e::onMouseDragEnd);
+            setOnMouseReleased(e::onMouseReleased);
         });
     }
 
-    private void drawBackground() {
-        Optional<Image> bg = Optional.ofNullable(backGroundImage);
-        bg.ifPresent(e -> gcbackground.drawImage(e, 0, 0, getWidth(), getHeight()));
-    }
+    abstract public void update();
 
-    public void render() {
-
-    }
-
-    public void update() {
-        for(int i = 0; i < gameObjects.size(); i++) {
-            gameObjects.get(i).move();
-
-        }
-        host.update();
+    public void moveObjects() {
+        gameObjects.forEach(GameObject::move);
+        particles.forEach(GameObject::moveAlternative);
     }
 
     public void addListener(InputListener listener) {
@@ -91,16 +75,35 @@ public class Screen extends Scene {
         initInput();
     }
 
-    public void addGameObject(GameObject gameObject)
-    {
-        gameObject.setRectangle(GameObject.createRectangle(gameObject));
-        gameObjects.add(gameObject);
-        rectangles.add(gameObject.getRectangle());
-        root.getChildren().add(rectangles.get(rectangles.size()-1));
+    public void addGameObject(GameObject gameObject) {
+        if(gameObject instanceof Particle) {
+            particles.add((Particle) gameObject);
+        }
+        else {
+            gameObjects.add(gameObject);
+        }
+        root.getChildren().add(gameObject.getNode());
+    }
+
+    public void addGameObjects(ArrayList<GameObject> objects) {
+        gameObjects.addAll(objects);
+        objects.forEach(e -> root.getChildren().add(e.getNode()));
     }
 
     public void removeGameObject(GameObject gameObject) {
-        gameObjects.remove(gameObject);
+        if(gameObject instanceof Particle) {
+            particles.remove(gameObject);
+        } else {
+            gameObjects.remove(gameObject);
+        }
+        root.getChildren().remove(gameObject.getNode());
+    }
+
+    public void removeGameObjects(ArrayList<GameObject> objects) {
+        ArrayList<Node> toRemove = new ArrayList<>();
+        objects.forEach(e -> toRemove.add(e.getNode()));
+        gameObjects.removeAll(objects);
+        root.getChildren().removeAll(toRemove);
     }
 
     public ArrayList<GameObject> getGameObjects() {
@@ -119,36 +122,12 @@ public class Screen extends Scene {
         this.gc = gc;
     }
 
-    public GraphicsContext getGcbackground() {
-        return gcbackground;
-    }
-
-    public void setGcbackground(GraphicsContext gcbackground) {
-        this.gcbackground = gcbackground;
-    }
-
     public Image getBackGroundImage() {
         return backGroundImage;
     }
 
     public void setBackGroundImage(Image backGroundImage) {
         this.backGroundImage = backGroundImage;
-    }
-
-    public Canvas getCanvas() {
-        return canvas;
-    }
-
-    public void setCanvas(Canvas canvas) {
-        this.canvas = canvas;
-    }
-
-    public Canvas getCanvasBackground() {
-        return canvasBackground;
-    }
-
-    public void setCanvasBackground(Canvas canvasBackground) {
-        this.canvasBackground = canvasBackground;
     }
 
     public Game getHost() {
@@ -179,15 +158,11 @@ public class Screen extends Scene {
         this.music = music;
     }
 
-    public ArrayList<Rectangle> getRectangles() {
-        return rectangles;
+    public Canvas getCanvas() {
+        return canvas;
     }
 
-    public void setRectangles(ArrayList<Rectangle> rectangles) {
-        this.rectangles = rectangles;
-    }
-
-    public void addAll() {
-        rectangles.forEach(e -> root.getChildren().add(e));
+    public void setCanvas(Canvas canvas) {
+        this.canvas = canvas;
     }
 }

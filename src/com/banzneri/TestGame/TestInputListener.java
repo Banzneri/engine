@@ -2,8 +2,10 @@ package com.banzneri.TestGame;
 
 
 import com.banzneri.input.InputListener;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 
 public class TestInputListener implements InputListener {
@@ -13,6 +15,7 @@ public class TestInputListener implements InputListener {
     private boolean up = false;
     private boolean left = false;
     private boolean right = false;
+    private boolean dragging = false;
 
     public TestInputListener(TestPlayer player, TestGame host) {
         this.rect = player;
@@ -53,12 +56,46 @@ public class TestInputListener implements InputListener {
     }
 
     @Override
-    public void onMouseClicked(MouseEvent e) {
-        if(e.getButton() == MouseButton.SECONDARY) {
-            host.toggleMusic();
+    public void onMousePressed(MouseEvent mouseEvent) {
+        if(rect.getTestRect().getRectangle().contains(new Point2D(mouseEvent.getX(), mouseEvent.getY()))) {
+            dragging = true;
+        } else if(mouseEvent.getButton() == MouseButton.SECONDARY) {
+                host.toggleMusic();
         } else {
             host.playSound();
             rect.shoot();
+        }
+    }
+
+    @Override
+    public void onMouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void onMouseReleased(MouseEvent mouseEvent) {
+        dragging = false;
+    }
+
+    @Override
+    public void onMouseMoved(MouseEvent e) {
+
+    }
+
+    @Override
+    public void onMouseDragStart(MouseDragEvent mouseDragEvent) {
+
+    }
+
+    @Override
+    public void onMouseDragEnd(MouseDragEvent mouseDragEvent) {
+        dragging = false;
+    }
+
+    @Override
+    public void onMouseDragged(MouseEvent mouseEvent) {
+        if(dragging) {
+            rect.getTestRect().setX(mouseEvent.getX() - rect.getTestRect().getWidth()/2);
+            rect.getTestRect().setY(mouseEvent.getY() - rect.getTestRect().getHeight()/2);
         }
     }
 

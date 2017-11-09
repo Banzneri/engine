@@ -2,11 +2,9 @@ package com.banzneri.geometry;
 
 import com.banzneri.graphics.GameObject;
 import javafx.geometry.Point2D;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.transform.Affine;
-import javafx.scene.transform.Rotate;
 
 public class Rect extends GameObject {
     private Color color;
@@ -20,12 +18,7 @@ public class Rect extends GameObject {
     private Point2D bottomRight;
 
     public Rect(double width, double height) {
-        setWidth(width);
-        setHeight(height);
-        setX(0);
-        setY(0);
-        setRotation(0);
-        setRectangle(createRectangle(this));
+        super(0, 0, width, height);
 
         topLeft = new Point2D(getX(), getY());
         topRight = new Point2D(getX() + getWidth(), getY());
@@ -37,18 +30,16 @@ public class Rect extends GameObject {
         sideBottom = new Line(bottomRight.getX(), bottomRight.getY(), bottomLeft.getX(), bottomLeft.getY());
         sideLeft = new Line(bottomLeft.getX(), bottomLeft.getY(), topLeft.getX(), topLeft.getY());
         color = Color.WHITE;
+        setNode(getRectangle());
     }
 
     public Rect(double x, double y, double width, double height) {
-        setX(x);
-        setY(y);
-        setWidth(width);
-        setHeight(height);
+        super(x, y, width, height);
     }
 
     @Override
-    public void draw(GraphicsContext gc) {
-
+    public Node getNode() {
+        return getRectangle();
     }
 
     public Color getColor() {
