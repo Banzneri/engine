@@ -17,7 +17,7 @@ public abstract class GameObject {
     private double height;
     private boolean collides = true;
     private double rotation = 0;
-    private Rectangle rectangle = createRectangle(this);
+    private Rectangle rectangle;
     private Point2D location;
     private Point2D speed = Point2D.ZERO;
     private Point2D acceleration = Point2D.ZERO;
@@ -25,6 +25,7 @@ public abstract class GameObject {
     private Node node;
 
     public GameObject(double x, double y, double width, double height) {
+        setRectangle(new Rectangle(x, y, width, height));
         setX(x);
         setY(y);
         location = new Point2D(x, y);
@@ -66,7 +67,7 @@ public abstract class GameObject {
     }
 
     public void setX(double x) {
-        rectangle.setTranslateX(x);
+        rectangle.setX(x);
         this.x = x;
     }
 
@@ -75,7 +76,7 @@ public abstract class GameObject {
     }
 
     public void setY(double y) {
-        rectangle.setTranslateY(y);
+        rectangle.setY(y);
         this.y = y;
     }
 
@@ -107,7 +108,9 @@ public abstract class GameObject {
 
     public void setRotation(double rotation) {
         this.rotation = rotation;
-        setRectangle(createRectangle(this));
+        Rotate rotate = new Rotate();
+        rotate.setAngle(getRotation());
+        rectangle.getTransforms().add(new Affine(rotate));
     }
 
     public Rectangle getRectangle() {
@@ -152,20 +155,6 @@ public abstract class GameObject {
 
     public void setAcceleration(Point2D acceleration) {
         this.acceleration = acceleration;
-    }
-
-    public static Rectangle createRectangle(GameObject gameObject) {
-        Rectangle rectangle = new Rectangle(gameObject.getX(), gameObject.getY(),
-                                            gameObject.getWidth(), gameObject.getHeight());
-        Rotate rotate = new Rotate();
-        rotate.setAngle(gameObject.getRotation());
-        rectangle.getTransforms().add(new Affine(rotate));
-        return rectangle;
-    }
-
-    public static Rectangle createNonRotatedRectangle(GameObject object) {
-         return new Rectangle(object.getX(), object.getY(),
-                object.getWidth(), object.getHeight());
     }
 
     public Node getNode() {

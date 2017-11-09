@@ -37,8 +37,7 @@ public class Sprite extends GameObject {
     public void draw(GraphicsContext gc) {
         gc.save();
         gc.transform(new Affine(new Rotate(getRotation(), getX(), getY())));
-        gc.setFill(Color.RED);
-        gc.fillRect(getX(), getY(), getWidth(), getHeight());
+        gc.drawImage(getTexture().getImage(), getX(), getY(), getWidth(), getHeight());
         gc.restore();
     }
 

@@ -86,7 +86,7 @@ public abstract class Screen extends Scene {
         else {
             gameObjects.add(gameObject);
         }
-        //root.getChildren().add(gameObject.getNode());
+        root.getChildren().add(gameObject.getNode());
     }
 
     public void addGameObjects(ArrayList<GameObject> objects) {
