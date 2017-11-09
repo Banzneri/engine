@@ -36,8 +36,8 @@ public abstract class GameObject {
         setX(getX() + getSpeedX());
         setY(getY() + getSpeedY());
         setLocation(new Point2D(getX(), getY()));
-        rectangle.setX(getX());
-        rectangle.setY(getY());
+        rectangle.setTranslateX(getX());
+        rectangle.setTranslateY(getY());
     }
 
     abstract public void draw(GraphicsContext gc);
@@ -45,8 +45,8 @@ public abstract class GameObject {
     public void moveAlternative() {
         setSpeed(getSpeed().add(getAcceleration()));
         setLocation(getLocation().add(getSpeed()));
-        rectangle.setX(getLocation().getX());
-        rectangle.setY(getLocation().getY());
+        rectangle.setTranslateX(getX());
+        rectangle.setTranslateY(getY());
         setAcceleration(getAcceleration().multiply(0));
     }
 

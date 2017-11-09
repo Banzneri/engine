@@ -45,7 +45,7 @@ public class Rect extends GameObject {
         gc.save();
         gc.transform(new Affine(new Rotate(getRotation(), getX(), getY())));
         gc.setFill(Color.RED);
-        gc.fillRect(getRectangle().getTranslateX(), getRectangle().getTranslateY(), getWidth(), getHeight());
+        gc.fillRect(getX(), getY(), getWidth(), getHeight());
         gc.restore();
     }
 
