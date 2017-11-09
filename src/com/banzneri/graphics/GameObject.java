@@ -67,7 +67,7 @@ public abstract class GameObject {
     }
 
     public void setX(double x) {
-        rectangle.setX(x);
+        rectangle.setTranslateX(x);
         this.x = x;
     }
 
@@ -76,7 +76,7 @@ public abstract class GameObject {
     }
 
     public void setY(double y) {
-        rectangle.setY(y);
+        rectangle.setTranslateY(y);
         this.y = y;
     }
 
@@ -110,6 +110,8 @@ public abstract class GameObject {
         this.rotation = rotation;
         Rotate rotate = new Rotate();
         rotate.setAngle(getRotation());
+        rotate.setPivotX(0);
+        rotate.setPivotY(0);
         rectangle.getTransforms().add(new Affine(rotate));
     }
 
