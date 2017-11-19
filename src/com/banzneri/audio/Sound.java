@@ -1,22 +1,17 @@
 package com.banzneri.audio;
 
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.util.Duration;
+import javafx.scene.media.AudioClip;
 
 import java.io.File;
 
 public class Sound {
-    private Media sound;
-    MediaPlayer player;
+    private AudioClip sound;
 
     public Sound(String url) {
-        sound = new Media(new File(url).toURI().toString());
-        player = new MediaPlayer(sound);
+        sound = new AudioClip(new File(url).toURI().toString());
     }
 
     public void play() {
-        player.seek(Duration.ZERO);
-        player.play();
+        sound.play(1.0);
     }
 }

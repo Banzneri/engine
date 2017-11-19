@@ -19,23 +19,18 @@ public class TestGame extends Game {
         startGame(primaryStage, screen);
     }
 
-    public void initGame() {
+    private void initGame() {
         sound = new Sound("shot.wav");
         sound.play();
         music = new Music("music.mp3");
         screen = new TestScreen(1680, 1050, this);
     }
 
-    @Override
-    public void update() {
-
-    }
-
-    public void playSound() {
+    void playSound() {
         sound.play();
     }
 
-    public void toggleMusic() {
+    void toggleMusic() {
         if(music.isPlaying())
             music.pause();
         else music.play();

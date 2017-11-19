@@ -1,6 +1,7 @@
 package com.banzneri.TestGame;
 
 import com.banzneri.geometry.Rect;
+import com.banzneri.geometry.Vector2d;
 import com.banzneri.particles.Emitter;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
@@ -13,15 +14,17 @@ public class TestPlayer extends Rect {
 
     public TestPlayer(TestScreen host) {
         super(50, 200, 50, 50);
-        getRectangle().setFill(Color.RED);
-        setHost(host);
         rect = new TestRect(100, 300, getWidth(), getHeight());
-        line = new TestLine(getCenterLocation().getX(), getCenterLocation().getY(),
-                        rect.getCenterLocation().getX(), rect.getCenterLocation().getY());
-        host.addGameObject(rect);
-        host.addGameObject(line);
+        line = new TestLine(getCenterLocation().x, getCenterLocation().y,
+                        rect.getCenterLocation().x, rect.getCenterLocation().y);
         emitter = new Emitter(getLocation(), getWidth(), host);
-        //emitter.emit();
+        emitter.setParticleSize(1);
+        emitter.emit();
+
+        setColor(Color.RED);
+        setHost(host);
+        host.addGameObject(line);
+        host.addGameObject(rect);
     }
 
     public TestScreen getHost() {
@@ -32,21 +35,23 @@ public class TestPlayer extends Rect {
         this.host = host;
     }
 
-    public void shoot() {
+    public void shoot(Point2D velocity) {
         TestBullet bullet = new TestBullet(getX(), getY());
+        bullet.setSpeedX(velocity.getX() * 20);
+        bullet.setSpeedY(velocity.getY() * 20);
         host.addGameObject(bullet);
         TestScreen s = host;
         s.addBullet(bullet);
     }
 
     @Override
-    public void move() {
-        super.move();
-        emitter.setLocation(new Point2D(getX(), getY() + getSpeedY()));
-        line.setStartX(getCenterLocation().getX());
-        line.setStartY(getCenterLocation().getY());
-        line.setEndX(rect.getCenterLocation().getX());
-        line.setEndY(rect.getCenterLocation().getY());
+    public void move(double delta) {
+        super.move(delta);
+        emitter.setLocation(new Vector2d(getX(), getY() + getSpeedY()));
+        line.setStartX(getCenterLocation().x);
+        line.setStartY(getCenterLocation().y);
+        line.setEndX(rect.getCenterLocation().x);
+        line.setEndY(rect.getCenterLocation().y);
     }
 
     public TestRect getTestRect() {

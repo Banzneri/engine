@@ -11,11 +11,13 @@ import javafx.scene.transform.Rotate;
 public class Sprite extends GameObject {
     private Texture texture;
     private ImageView view;
+    private boolean flipped;
 
     public Sprite(Texture texture, Rect rect) {
         super(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
         setTexture(texture);
         initView();
+        setFlipped(false);
     }
 
     public Sprite(double x, double y, double width, double height, Texture texture) {
@@ -25,20 +27,24 @@ public class Sprite extends GameObject {
     }
 
     @Override
-    public void move() {
-        getRectangle().relocate(getX(), getY());
-        setX(getX() + getSpeedX());
-        setY(getY() + getSpeedY());
+    public void move(double delta) {
+        super.move(delta);
         getView().setX(getX());
         getView().setY(getY());
     }
 
     @Override
     public void draw(GraphicsContext gc) {
-        gc.save();
-        gc.transform(new Affine(new Rotate(getRotation(), getX(), getY())));
-        gc.drawImage(getTexture().getImage(), getX(), getY(), getWidth(), getHeight());
-        gc.restore();
+        if(isVisible()) {
+            gc.save();
+            gc.transform(new Affine(new Rotate(getRotation(), getX() + getPivotX(), getY() + getPivotY())));
+            if(flipped) {
+                gc.drawImage(getTexture().getImage(), 0, 0, getTexture().getImage().getWidth(), getTexture().getImage().getHeight(), getX() + getWidth(),getY(), -getWidth(), getHeight());
+            } else {
+                gc.drawImage(getTexture().getImage(), getX(), getY(), getWidth(), getHeight());
+            }
+            gc.restore();
+        }
     }
 
     public Texture getTexture() {
@@ -69,11 +75,24 @@ public class Sprite extends GameObject {
     @Override
     public void setRotation(double rotation) {
         super.setRotation(rotation);
-        getView().setRotate(rotation);
+        getView().getTransforms().clear();
+        Rotate rotate = new Rotate();
+        rotate.setAngle(getRotation());
+        rotate.setPivotX(getX() + getPivotX());
+        rotate.setPivotY(getY() + getPivotY());
+        getView().getTransforms().add(new Affine(rotate));
     }
 
     @Override
     public Node getNode() {
         return getView();
+    }
+
+    public boolean isFlipped() {
+        return flipped;
+    }
+
+    public void setFlipped(boolean flipped) {
+        this.flipped = flipped;
     }
 }

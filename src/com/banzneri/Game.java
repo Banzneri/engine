@@ -6,6 +6,10 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
+/**
+ * The entry point for the game application. Sets up the javafx Stage and the Screen for the stage.
+ * Starts up the javafx application.
+ */
 public abstract class Game extends Application {
     private Stage stage;
     private Screen screen;
@@ -17,8 +21,6 @@ public abstract class Game extends Application {
         getStage().show();
         setScreen(screen);
     }
-
-    abstract public void update();
 
     public double getWidth() {
         return getScreen().getWidth();
@@ -38,7 +40,8 @@ public abstract class Game extends Application {
 
     public void setScreen(Screen screen) {
         this.screen = screen;
-        stage.setScene(getScreen());
+        stage.setScene(screen);
+        System.out.println(stage.getScene());
     }
 
     public Screen getScreen() {

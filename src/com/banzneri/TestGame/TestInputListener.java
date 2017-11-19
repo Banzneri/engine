@@ -33,7 +33,7 @@ public class TestInputListener implements InputListener {
             case LEFT:  left = true; break;
             case D:
             case RIGHT: right = true; break;
-            case SPACE: rect.shoot();
+            case SPACE: //rect.shoot();
         }
 
         move();
@@ -56,15 +56,19 @@ public class TestInputListener implements InputListener {
     }
 
     @Override
-    public void onMousePressed(MouseEvent mouseEvent) {
-        if(rect.getTestRect().getRectangle().contains(new Point2D(mouseEvent.getX(), mouseEvent.getY()))) {
+    public void onMousePressed(MouseEvent me) {
+        if(rect.getTestRect().contains(me.getX(), me.getY())) {
             dragging = true;
-        } else if(mouseEvent.getButton() == MouseButton.SECONDARY) {
+            rect.getTestRect().setSpeed(0, 0);
+            rect.getTestRect().setCollides(false);
+        } else if(me.getButton() == MouseButton.SECONDARY) {
                 host.toggleMusic();
         } else {
             host.playSound();
-            rect.shoot();
+            rect.shoot(new Point2D(me.getX() - rect.getX(), me.getY() - rect.getY()).normalize());
         }
+        System.out.println("Mouse: " + me.getX() + " " + me.getY());
+        System.out.println("rect: " + rect.getTestRect().getRectangle().getTranslateX() + " " + rect.getTestRect().getRectangle().getTranslateY());
     }
 
     @Override
@@ -74,6 +78,7 @@ public class TestInputListener implements InputListener {
     @Override
     public void onMouseReleased(MouseEvent mouseEvent) {
         dragging = false;
+        rect.getTestRect().setCollides(true);
     }
 
     @Override
@@ -96,6 +101,7 @@ public class TestInputListener implements InputListener {
         if(dragging) {
             rect.getTestRect().setX(mouseEvent.getX() - rect.getTestRect().getWidth()/2);
             rect.getTestRect().setY(mouseEvent.getY() - rect.getTestRect().getHeight()/2);
+            rect.getTestRect().setSpeed(0, 0);
         }
     }
 

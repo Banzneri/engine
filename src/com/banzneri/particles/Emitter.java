@@ -2,78 +2,116 @@ package com.banzneri.particles;
 
 import com.banzneri.Screen;
 import com.banzneri.Util;
+import com.banzneri.geometry.Vector2d;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class Emitter {
-    private Point2D location;
+    private Particle[] particles;
+    private Vector2d location;
     private double width;
-    private ArrayList<Particle> particles = new ArrayList<>();
     private AnimationTimer timer;
+    private double particleSize;
+    private long particleLifeSpan;
+    private int maxParticles;
     private Screen host;
+    private ArrayList<Particle> spawnPool = new ArrayList<>();
+    private Random random = new Random();
+    private double rateInSeconds = 1000;
+    private long duration;
 
-    public Emitter(Point2D location, double width, Screen host) {
+    public Emitter(Vector2d location, double width, Screen host) {
+        setHost(host);
         setLocation(location);
         setWidth(width);
-        this.host = host;
+        setParticleSize(5);
+        setParticleLifeSpan(1);
+        setMaxParticles(100000);
+        host.setParticles(spawnPool);
+        setDuration(TimeUnit.NANOSECONDS.convert(500, TimeUnit.MILLISECONDS));
+        loadParticles();
     }
 
-    public Point2D getLocation() {
+    public Vector2d getLocation() {
         return location;
     }
 
-    public Particle addParticle() {
-        Random r = new Random();
-        double x = getLocation().getX();
-        double y = getLocation().getY();
-        Point2D location = new Point2D(Util.getRandomInRange(x, x + getWidth()), y);
-        double vx = r.nextGaussian() * 0.3;
-        double vy = r.nextGaussian() * 0.3 - 1.0;
-        Point2D velocity = new Point2D(vx, vy);
-        Point2D acceleration = Point2D.ZERO;
-        Particle particle = new Particle(location, velocity, acceleration, 2, 2);
+    private Particle createParticle() {
+        double x = getLocation().x;
+        double y = getLocation().y;
+        Vector2d location = new Vector2d(Util.getRandomInRange(x, x + getWidth()), y);
+        double vx = random.nextGaussian() * 0.3;
+        double vy = random.nextGaussian() * 0.3 - 1.0;
+        Vector2d velocity = new Vector2d(vx, vy);
+        Vector2d acceleration = new Vector2d(0, 0);
+        Particle particle = new Particle(location, velocity, acceleration, particleSize, particleLifeSpan);
         particle.getRectangle().setFill(Color.RED);
-        particles.add(particle);
+        particle.setHost(this);
         return particle;
+    }
+
+    private void loadParticles() {
+        particles = new Particle[getMaxParticles()];
+        for(int i = 0; i < getMaxParticles(); i++) {
+            particles[i] = createParticle();
+        }
     }
 
     public void emit() {
         timer = new AnimationTimer() {
             long start = System.nanoTime();
+            long beginning = System.nanoTime();
+
+            Vector2d forceGravity = new Vector2d(0, 0.01);
+            int idx = 0;
+
             @Override
             public void handle(long now) {
                 long elapsed = now - start;
-                Point2D forceGravity = new Point2D(0, 0.01);
-                particles.forEach(e -> {
+                spawnPool.removeIf(e -> !e.isAlive());
+                for (int i = 0; i < rateInSeconds * host.getDelta(); i++) {
+                    respawn(particles[idx]);
+                    spawnPool.add(particles[idx]);
+                    idx++;
+                    if(idx >= particles.length - 1) {
+                        idx = 0;
+                    }
+                }
+                spawnPool.stream().parallel().forEach(e ->  {
+                    e.reduceLifeSpan(elapsed);
                     e.applyForce(forceGravity);
                     e.moveAlternative();
-                    e.reduceLifeSpan(elapsed);
+
                 });
                 start = now;
-                for (int i = 0; i < 100; i++) {
-                    host.addGameObject(addParticle());
+                if (now - beginning > TimeUnit.NANOSECONDS.convert(duration, TimeUnit.MILLISECONDS)) {
+                    spawnPool.clear();
+                    this.stop();
                 }
-                killParticles();
             }
         };
         timer.start();
     }
 
-    public void stop() {
-        timer.stop();
+    private void respawn(Particle particle) {
+        double x = getLocation().x;
+        double y = getLocation().y;
+        double vx = random.nextGaussian() * 0.3;
+        double vy = random.nextGaussian() * 0.3 - 1.0;
+        Vector2d location = new Vector2d(Util.getRandomInRange(x, x + getWidth()), y);
+
+        particle.setLocation(location);
+        particle.setSpeed(new Vector2d(vx, vy));
+        particle.setAcceleration(new Vector2d(0, 0));
+        particle.setLifeSpan(particleLifeSpan);
     }
 
-    public void killParticles() {
-        particles.forEach(e -> {
-            if (!e.isAlive()) host.removeGameObject(e); });
-        particles.removeIf(particle -> !particle.isAlive());
-    }
-
-    public void setLocation(Point2D location) {
+    public void setLocation(Vector2d location) {
         this.location = location;
     }
 
@@ -85,11 +123,65 @@ public class Emitter {
         this.width = width;
     }
 
-    public ArrayList<Particle> getParticles() {
-        return particles;
+    public double getParticleSize() {
+        return particleSize;
     }
 
-    public void setParticles(ArrayList<Particle> particles) {
-        this.particles = particles;
+    public void setParticleSize(double particleSize) {
+        this.particleSize = particleSize;
+        loadParticles();
+    }
+
+    public long getParticleLifeSpan() {
+        return particleLifeSpan;
+    }
+
+    public void setParticleLifeSpan(long particleLifeSpan) {
+        this.particleLifeSpan = particleLifeSpan;
+    }
+
+    public int getMaxParticles() {
+        return maxParticles;
+    }
+
+    public void setMaxParticles(int maxParticles) {
+        this.maxParticles = maxParticles;
+        loadParticles();
+    }
+
+    public Screen getHost() {
+        return host;
+    }
+
+    public void setHost(Screen host) {
+        this.host = host;
+    }
+
+    public ArrayList<Particle> getSpawnPool() {
+        return spawnPool;
+    }
+
+    public void setSpawnPool(ArrayList<Particle> spawnPool) {
+        this.spawnPool = spawnPool;
+    }
+
+    public double getRateInSeconds() {
+        return rateInSeconds;
+    }
+
+    public void setRateInSeconds(double rateInSeconds) {
+        this.rateInSeconds = rateInSeconds;
+    }
+
+    public boolean isOutOfBounds(Particle particle) {
+        return particle.getX() > getHost().getWidth() || particle.getX() < 0 || particle.getY() > getHost().getHeight() || particle.getY() < 0;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 }

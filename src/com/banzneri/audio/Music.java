@@ -5,14 +5,16 @@ import javafx.scene.media.MediaPlayer;
 
 import java.io.File;
 
-public class Music extends Sound {
+public class Music {
     private boolean isPlaying = false;
+    private MediaPlayer player;
+    private Media music;
 
     public Music(String url) {
-        super(url);
+        music = new Media(new File(url).toURI().toString());
+        player = new MediaPlayer(music);
     }
 
-    @Override
     public void play() {
         isPlaying = true;
         player.play();

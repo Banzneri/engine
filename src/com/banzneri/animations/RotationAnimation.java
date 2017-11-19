@@ -1,32 +1,41 @@
 package com.banzneri.animations;
 
+import com.banzneri.Util;
 import com.banzneri.graphics.GameObject;
-import javafx.animation.RotateTransition;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
+import javafx.animation.AnimationTimer;
 
 public class RotationAnimation extends Animation {
     private GameObject gameObject;
     private double angleInDegrees;
+    private double duration;
+    private AnimationTimer timer;
+    private double pivotX;
+    private double pivotY;
 
 
     public RotationAnimation(double durationInSeconds, double angleInDegrees, GameObject gameObject) {
         super(durationInSeconds);
         setGameObject(gameObject);
         setAngleInDegrees(angleInDegrees);
-        RotateTransition transition = new RotateTransition(Duration.seconds(durationInSeconds), gameObject.getNode());
-        transition.setCycleCount(Timeline.INDEFINITE);
-        transition.setByAngle(getAngleInDegrees());
-        transition.setAutoReverse(true);
-        setTransition(transition);
+        setDuration(durationInSeconds);
     }
 
     public void start() {
-        getTransition().play();
+        double startRotation = gameObject.getRotation();
+        timer = new AnimationTimer() {
+            long start = System.nanoTime();
+            @Override
+            public void handle(long now) {
+                long elapsed = System.nanoTime() - start;
+                if(Util.nanosToSeconds(elapsed) > duration) this.stop();
+                gameObject.setRotation(getAngleInDegrees() * (Util.nanosToSeconds(elapsed) / duration));
+            }
+        };
+        timer.start();
     }
 
     public void stop() {
-        getTransition().stop();
+        timer.stop();
     }
 
     public GameObject getGameObject() {
@@ -43,5 +52,29 @@ public class RotationAnimation extends Animation {
 
     public void setAngleInDegrees(double angleInDegrees) {
         this.angleInDegrees = angleInDegrees;
+    }
+
+    public double getDuration() {
+        return duration;
+    }
+
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
+
+    public double getPivotX() {
+        return pivotX;
+    }
+
+    public void setPivotX(double pivotX) {
+        this.pivotX = pivotX;
+    }
+
+    public double getPivotY() {
+        return pivotY;
+    }
+
+    public void setPivotY(double pivotY) {
+        this.pivotY = pivotY;
     }
 }

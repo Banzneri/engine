@@ -1,12 +1,15 @@
 package com.banzneri.TestGame;
 
-import com.banzneri.Game;
 import com.banzneri.Screen;
 import com.banzneri.animations.RotationAnimation;
 import com.banzneri.geometry.Rect;
+import com.banzneri.geometry.Vector2d;
 import com.banzneri.graphics.GameObject;
 import com.banzneri.particles.Emitter;
+import com.banzneri.tileengine.TMXMapLoader;
+import com.banzneri.tileengine.Tile;
 import javafx.geometry.Point2D;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
 
@@ -23,6 +26,9 @@ public class TestScreen extends Screen {
     @Override
     public void update() {
         checkCollision();
+        getGc().clearRect(0, 0, getWidth(), getHeight());
+        getGameObjects().forEach(e -> e.draw(getGc()));
+        getGameObjects().forEach(e -> e.move(getDelta()));
     }
 
     public void addBullet(TestBullet b) {
@@ -31,21 +37,28 @@ public class TestScreen extends Screen {
     }
 
     public void initGameObjects() {
+        Emitter emitter = new Emitter(new Vector2d(0, getHeight()-60), getWidth(), this);
+        emitter.emit();
         player = new TestPlayer(this);
-        Rect rect = new Rect(20, 50, 100, 100);
+        Rect rect = new Rect(100, 50, 100, 100);
         rect.setColor(Color.RED);
         rect.setSpeedX(1);
+        rect.setPivotX(rect.getWidth()/2);
+        rect.setPivotY(rect.getHeight()/2);
         rect.setRotation(20);
         TestBrick b1 = new TestBrick();
         TestBrick b2 = new TestBrick();
-        b2.setX(200);
-        b1.setX(200);
+        b2.setX(500);
+        b2.setY(30);
+        b1.setX(500);
         b1.setY(400);
-        /*Emitter emitter = new Emitter(new Point2D(0, getHeight()-60), getWidth(), this);
-        emitter.emit();*/
+        b2.setPivotX(b2.getWidth()/2);
+        b2.setPivotY(b2.getHeight()/2);
         b2.setRotation(45);
-        RotationAnimation anim = new RotationAnimation(10, 1000, b2);
+        RotationAnimation anim = new RotationAnimation(20, 360, b2);
         anim.start();
+        RotationAnimation animation = new RotationAnimation(20, 360, rect);
+        animation.start();
         addGameObject(rect);
         addGameObject(b1);
         addGameObject(b2);
@@ -65,7 +78,8 @@ public class TestScreen extends Screen {
     }
 
     private void checkCollision() {
-        ArrayList<GameObject> collided = new ArrayList<>();
+        handleBullets();
+        handleWallHit();
         main : for(GameObject o1: getGameObjects()) {
             for (GameObject o2 : getGameObjects()) {
                 if(o1.collidesWith(o2) && !o1.equals(o2)) {
@@ -74,11 +88,11 @@ public class TestScreen extends Screen {
                 }
             }
         }
-        handleWallHit();
-        handleBullets();
     }
 
     public void swapVelocities(GameObject o1, GameObject o2) {
+        if(o1.equals(player) && o2 instanceof TestBullet || (o1 instanceof TestBullet) && o2.equals(player))
+            return;
         double o1VelocityX = o1.getSpeedX();
         double o1VelocityY = o1.getSpeedY();
         double o2VelocityX = o2.getSpeedX();
@@ -118,9 +132,27 @@ public class TestScreen extends Screen {
     }
 
     public void handleWallHit() {
-        getGameObjects().forEach(object -> {
-            if(isWallHitHorizontal(object)) object.setSpeedX(-object.getSpeedX());
-            if(isWallHitVertical(object)) object.setSpeedY(-object.getSpeedY());
+        getGameObjects().forEach(o -> {
+            double x1 = o.getMinX();
+            double x2 = o.getMaxX();
+            double y1 = o.getMinY();
+            double y2 = o.getMaxY();
+
+            if(x1 < 0) {
+                o.setX(0 - x1);
+                o.setSpeedX(-o.getSpeedX());
+            }
+            else if(x2 > getWidth()) {
+                o.setX(getWidth() - o.getWidth() - (x2 - getWidth()));
+                o.setSpeedX(-o.getSpeedX());
+            }
+            else if(y1 < 0) {
+                o.setY(0 - y1);
+                o.setSpeedY(-o.getSpeedY());
+            } else if(y2 > getHeight()) {
+                o.setY(getHeight() - o.getHeight()  - (y2 - getHeight()));
+                o.setSpeedY(-o.getSpeedY());
+            }
         });
     }
 

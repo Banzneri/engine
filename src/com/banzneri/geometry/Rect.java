@@ -9,7 +9,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 
-public class Rect extends GameObject {
+ public class Rect extends GameObject {
     private Color color;
     private Line sideUp;
     private Line sideRight;
@@ -22,18 +22,10 @@ public class Rect extends GameObject {
 
     public Rect(double width, double height) {
         super(0, 0, width, height);
-
-        topLeft = new Point2D(getX(), getY());
-        topRight = new Point2D(getX() + getWidth(), getY());
-        bottomRight = new Point2D(getX() + width, getY() + getHeight());
-        bottomLeft = new Point2D(getX(), getY() + getHeight());
-
-        sideUp = new Line(topLeft.getX(), topLeft.getY(), topRight.getX(), topRight.getY());
-        sideRight = new Line(topRight.getX(), topRight.getY(), bottomRight.getX(), bottomRight.getY());
-        sideBottom = new Line(bottomRight.getX(), bottomRight.getY(), bottomLeft.getX(), bottomLeft.getY());
-        sideLeft = new Line(bottomLeft.getX(), bottomLeft.getY(), topLeft.getX(), topLeft.getY());
-        color = Color.WHITE;
+        setColor(Color.GREEN);
         setNode(getRectangle());
+        initVertices();
+        initSides();
     }
 
     public Rect(double x, double y, double width, double height) {
@@ -43,10 +35,32 @@ public class Rect extends GameObject {
     @Override
     public void draw(GraphicsContext gc) {
         gc.save();
-        gc.transform(new Affine(new Rotate(getRotation(), getX(), getY())));
-        gc.setFill(Color.RED);
+        gc.transform(new Affine(new Rotate(getRotation(), getX() + getPivotX(), getY() + getPivotY())));
+        gc.setFill(getColor());
         gc.fillRect(getX(), getY(), getWidth(), getHeight());
         gc.restore();
+    }
+
+    /**
+     * Initiates the vertice locations of the rectangle, these are probably used in the future if
+     * I'm going to implement a rotation and collision system of my own.
+     */
+    public void initVertices() {
+        topLeft = new Point2D(getX(), getY());
+        topRight = new Point2D(getX() + getWidth(), getY());
+        bottomRight = new Point2D(getX() + getWidth(), getY() + getHeight());
+        bottomLeft = new Point2D(getX(), getY() + getHeight());
+    }
+
+    /**
+     * Initiates the side vectors of the rectangle, these are probably used in the future if
+     * I'm going to implement a rotation and collision system of my own.
+     */
+    public void initSides() {
+        sideUp = new Line(topLeft.getX(), topLeft.getY(), topRight.getX(), topRight.getY());
+        sideRight = new Line(topRight.getX(), topRight.getY(), bottomRight.getX(), bottomRight.getY());
+        sideBottom = new Line(bottomRight.getX(), bottomRight.getY(), bottomLeft.getX(), bottomLeft.getY());
+        sideLeft = new Line(bottomLeft.getX(), bottomLeft.getY(), topLeft.getX(), topLeft.getY());
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.banzneri.particles;
 
+import com.banzneri.geometry.Vector2d;
 import com.banzneri.graphics.GameObject;
+import com.sun.org.glassfish.external.statistics.impl.TimeStatisticImpl;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.canvas.GraphicsContext;
@@ -8,23 +10,27 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 
+import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
 public class Particle extends GameObject {
-    private double lifeSpan;
-    private double size;
+    private long lifeSpan;
+    private double maxLifeSpan;
+    private Emitter host;
 
-    public Particle(Point2D location, Point2D velocity, Point2D acceleration, double size, double lifeSpanInSeconds) {
-        super(location.getX(), location.getY(), size, size);
-        setSpeedX(velocity.getX());
-        setSpeedY(velocity.getY());
+    public Particle(Vector2d location, Vector2d velocity, Vector2d acceleration, double size, long lifeSpanInSeconds) {
+        super(location.x, location.y, size, size);
+        setSpeedX(velocity.x);
+        setSpeedY(velocity.y);
         setAcceleration(acceleration);
         setLifeSpan(lifeSpanInSeconds);
+        setMaxLifeSpan(lifeSpanInSeconds);
     }
 
     @Override
     public void draw(GraphicsContext gc) {
         gc.save();
+        gc.setGlobalAlpha(0.5);
         gc.transform(new Affine(new Rotate(getRotation(), getX(), getY())));
         gc.setFill(Color.RED);
         gc.fillRect(getX(), getY(), getWidth(), getHeight());
@@ -35,8 +41,8 @@ public class Particle extends GameObject {
         return lifeSpan;
     }
 
-    public void setLifeSpan(double lifeSpan) {
-        this.lifeSpan = lifeSpan;
+    public void setLifeSpan(long lifeSpan) {
+        this.lifeSpan = TimeUnit.NANOSECONDS.convert(lifeSpan, TimeUnit.SECONDS);
     }
 
     @Override
@@ -44,15 +50,31 @@ public class Particle extends GameObject {
         return getRectangle();
     }
 
-    public void applyForce(Point2D force) {
-        setAcceleration(getAcceleration().add(force));
+    public void applyForce(Vector2d force) {
+        getAcceleration().add(force);
     }
 
     public void reduceLifeSpan(long time) {
-        lifeSpan -= (float) (time / 1E9);
+        lifeSpan -= time;
     }
 
     public boolean isAlive() {
         return lifeSpan > 0;
+    }
+
+    public double getMaxLifeSpan() {
+        return maxLifeSpan;
+    }
+
+    public void setMaxLifeSpan(double maxLifeSpan) {
+        this.maxLifeSpan = maxLifeSpan;
+    }
+
+    public Emitter getHost() {
+        return host;
+    }
+
+    public void setHost(Emitter host) {
+        this.host = host;
     }
 }
