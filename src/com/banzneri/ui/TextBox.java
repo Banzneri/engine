@@ -15,7 +15,8 @@ public class TextBox extends GameObject {
 
     @Override
     public void draw(GraphicsContext gc) {
-
+        gc.fillRect(getX(), getY(), getWidth(), getHeight());
+        gc.fillText(text, getX(), getY(), getWidth());
     }
 
     public String getText() {

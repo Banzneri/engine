@@ -5,7 +5,8 @@ import javafx.scene.image.Image;
 
 public class IntroScreen extends Screen {
     private Image introImage = new Image("/intro.png");
-    private double fadeInTime = 0;
+    private double fadeCounter = 0;
+    private double fadeTime = 10;
     private MyScreen myScreen;
 
     public IntroScreen(PlatformGame host) {
@@ -16,14 +17,13 @@ public class IntroScreen extends Screen {
 
     @Override
     public void update() {
-        fadeInTime += getDelta();
+        fadeCounter += getDelta();
         clearScreen();
-        getGc().setGlobalAlpha(fadeInTime / 5);
+        getGc().setGlobalAlpha(fadeCounter / fadeTime);
         getGc().drawImage(introImage, 0, 0, getWidth(), getHeight());
-        System.out.println(fadeInTime);
-        if(fadeInTime > 5) {
+        System.out.println(fadeCounter);
+        if(fadeCounter > 10) {
             getHost().startGame(getHost().getStage(), myScreen);
-            this.destroy();
         }
     }
 }

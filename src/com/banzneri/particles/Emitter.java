@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The class for the particle emitter. You can adjust different parameters to make the particles behave differently:
+ * their size, their max life span, their spawn rate, the maximum number of particles on the screen at the same time
+ * and the duration the emitter keeps emitting.
+ */
 public class Emitter {
     private Particle[] particles;
     private Vector2d location;
@@ -25,6 +30,13 @@ public class Emitter {
     private double rateInSeconds = 1000;
     private long duration;
 
+    /**
+     * The constructor for the Emitter.
+     *
+     * @param location The location of the emitter
+     * @param width The width of the emitter base
+     * @param host The host Screen object
+     */
     public Emitter(Vector2d location, double width, Screen host) {
         setHost(host);
         setLocation(location);
@@ -37,10 +49,11 @@ public class Emitter {
         loadParticles();
     }
 
-    public Vector2d getLocation() {
-        return location;
-    }
-
+    /**
+     * Creates a new particle according to the emitter attributes.
+     *
+     * @return A new particle object
+     */
     private Particle createParticle() {
         double x = getLocation().x;
         double y = getLocation().y;
@@ -55,6 +68,9 @@ public class Emitter {
         return particle;
     }
 
+    /**
+     * Loads particles into the particles array, according to the maxParticles attribute
+     */
     private void loadParticles() {
         particles = new Particle[getMaxParticles()];
         for(int i = 0; i < getMaxParticles(); i++) {
@@ -62,6 +78,11 @@ public class Emitter {
         }
     }
 
+    /**
+     * An AnimationTimer, which emits the particles, handles respawning of the particles,
+     * applies forces to the particles and moves the particles. Keeps doing this according to the
+     * duration attribute.
+     */
     public void emit() {
         timer = new AnimationTimer() {
             long start = System.nanoTime();
@@ -98,6 +119,11 @@ public class Emitter {
         timer.start();
     }
 
+    /**
+     * Respawns a particle. Makes it spawn again from the base of the emitter.
+     *
+     * @param particle The particle to respawn
+     */
     private void respawn(Particle particle) {
         double x = getLocation().x;
         double y = getLocation().y;
@@ -109,6 +135,22 @@ public class Emitter {
         particle.setSpeed(new Vector2d(vx, vy));
         particle.setAcceleration(new Vector2d(0, 0));
         particle.setLifeSpan(particleLifeSpan);
+    }
+
+    /**
+     * Checks if a particle is out of the screen.
+     *
+     * @param particle The particle to check
+     * @return True if out of screen, false otherwise
+     */
+    public boolean isOutOfBounds(Particle particle) {
+        return particle.getX() > getHost().getWidth() || particle.getX() < 0 || particle.getY() > getHost().getHeight() || particle.getY() < 0;
+    }
+
+    // GETTERS & SETTERS
+
+    public Vector2d getLocation() {
+        return location;
     }
 
     public void setLocation(Vector2d location) {
@@ -171,10 +213,6 @@ public class Emitter {
 
     public void setRateInSeconds(double rateInSeconds) {
         this.rateInSeconds = rateInSeconds;
-    }
-
-    public boolean isOutOfBounds(Particle particle) {
-        return particle.getX() > getHost().getWidth() || particle.getX() < 0 || particle.getY() > getHost().getHeight() || particle.getY() < 0;
     }
 
     public long getDuration() {

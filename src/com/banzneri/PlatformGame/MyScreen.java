@@ -24,7 +24,6 @@ public class MyScreen extends Screen {
     private Vector2d gravity = new Vector2d(0, 0.3);
     private TMXMap tiledMap;
     private Camera2D camera2D;
-    private double farthestWalked = 0;
     private Image enemyImage = new Image("/enemy.png");
     private Vector2d startLocation = new Vector2d(50, getHeight() / 2);
     private Emitter bloodEmitter;
@@ -56,9 +55,9 @@ public class MyScreen extends Screen {
         player.draw(getGc());
         enemies.forEach(e -> e.draw(getGc()));
         new ArrayList<>(bullets).forEach(e -> e.draw(getGc()));
-        player.moveAlternative();
         enemies.forEach(GameObject::moveAlternative);
         bullets.forEach(GameObject::moveAlternative);
+        player.moveAlternative();
         updatePlayer();
         handleCamera();
     }
@@ -73,9 +72,8 @@ public class MyScreen extends Screen {
         enemies.add(enemy);
         enemies.add(enemy1);
         tiledMap = new TMXMapLoader().load("/scifi.tmx");
-        tiledMap.setY(getHeight() / 4);
         tiledMap.initTiles();
-        tiledMap.getObjects().forEach(e -> {
+        tiledMap.getTMXObjects().forEach(e -> {
             Rect rect = new Rect(e.getX(), e.getY(), e.getWidth(), e.getHeight());
             if(!e.getName().equals("ladder")) {
                 platforms.add(rect);
@@ -121,12 +119,8 @@ public class MyScreen extends Screen {
      * Handles the camera movement
      */
     private void handleCamera() {
-        if(player.getX() > farthestWalked) {
-            farthestWalked = player.getX();
-            camera2D.setX(player.getX() - getWidth() / 2);
-        } else {
-            camera2D.setX(farthestWalked - getWidth() / 2);
-        }
+
+        camera2D.setX(player.getX() - getWidth() / 2);
 
         if(camera2D.getX() < 0) {
             camera2D.setX(0);
@@ -206,7 +200,6 @@ public class MyScreen extends Screen {
                 }
             }
             if(player.isRight(enemy)|| player.isLeft(enemy)) {
-                farthestWalked = 0;
                 player.setX(startLocation.x);
                 player.setY(startLocation.y);
             }

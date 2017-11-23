@@ -2,15 +2,12 @@ package com.banzneri.particles;
 
 import com.banzneri.geometry.Vector2d;
 import com.banzneri.graphics.GameObject;
-import com.sun.org.glassfish.external.statistics.impl.TimeStatisticImpl;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 
-import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
 public class Particle extends GameObject {

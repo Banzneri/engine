@@ -1,15 +1,19 @@
 package com.banzneri.tileengine;
 
-import com.banzneri.graphics.GameObject;
 import javafx.scene.image.Image;
 
 import java.util.List;
 import java.util.NavigableMap;
 
+/**
+ * The class for the Tiled map. TMXMap is created using TMXMapLoader. It parses a .tmx file, which is xml.
+ * Has all the layers, tile sets and objects of the map. Also holds info about the size of the map, the orientation,
+ * and tile width and height in pixels.
+ */
 public class TMXMap {
     private List<Layer> layers;
     private NavigableMap<Long, TileSet> tileSets;
-    private List<Object> objects;
+    private List<TMXObject> TMXObjects;
     private String orientation;
     private int width;
     private int height;
@@ -18,15 +22,29 @@ public class TMXMap {
     private double x = 0;
     private double y = 0;
 
-    public TMXMap(List<Layer> layers, NavigableMap<Long, TileSet> tileSets, List<Object> objects) {
+    /**
+     * The constructor for TMXMap.
+     *
+     * @param layers All the drawing layers of the map.
+     * @param tileSets All the tilesets used in the map.
+     * @param TMXObjects All objects in the map.
+     */
+    public TMXMap(List<Layer> layers, NavigableMap<Long, TileSet> tileSets, List<TMXObject> TMXObjects) {
         setLayers(layers);
         setTileSets(tileSets);
-        setObjects(objects);
+        setTMXObjects(TMXObjects);
     }
 
+    /**
+     * Initiates Tile objects for all the layers. Makes them the right size, puts them in the right location (x, y),
+     * and links them with the coordinates of the Tile graphics in the tile set, so the correct portion of the tile set
+     * image is drawn. Also offsets the TMXObjects by x and y location of the TMXMap, if the map has been moved.
+     */
     public void initTiles() {
+        // The tile set image. This is given as a parameter to all the Tile objects, so they can draw from this.
         Image tilesetImage = new Image(getTileSetImageSourceById(1));
 
+        // Iterates through all the layers, and creates Tile objects accordingly for all of them
         getLayers().forEach(layer -> {
             for(int y = 0; y < layer.height; y++) {
                 for(int x = 0; x < layer.width; x++) {
@@ -42,12 +60,21 @@ public class TMXMap {
             }
         });
 
-        getObjects().forEach(e -> {
-            e.setX(x + e.getX());
-            e.setY(y + e.getY());
-        });
+        // If the map has been moved, set the TMXObjects' coordinates to correctly offset this.
+        if(x != 0 && y != 0) {
+            getTMXObjects().forEach(e -> {
+                e.setX(x + e.getX());
+                e.setY(y + e.getY());
+            });
+        }
     }
 
+    /**
+     * Returns a Layer object of a given name
+     *
+     * @param name The name of the layer. This is name given in Tiled Map editor.
+     * @return The layer of the given name.
+     */
     public Layer get(String name) {
         for(Layer layer : layers) {
             if(layer.name.equals(name)) {
@@ -56,6 +83,8 @@ public class TMXMap {
         }
         return null;
     }
+
+    // GETTERS & SETTERS
 
     public List<Layer> getLayers() {
         return layers;
@@ -73,12 +102,12 @@ public class TMXMap {
         this.tileSets = tileSets;
     }
 
-    public List<Object> getObjects() {
-        return objects;
+    public List<TMXObject> getTMXObjects() {
+        return TMXObjects;
     }
 
-    public void setObjects(List<Object> objects) {
-        this.objects = objects;
+    public void setTMXObjects(List<TMXObject> TMXObjects) {
+        this.TMXObjects = TMXObjects;
     }
 
     public String getTileSetImageSourceById(long id) {
@@ -102,7 +131,7 @@ public class TMXMap {
     }
 
     public int getHeight() {
-        return height;
+        return height * tileHeight;
     }
 
     public void setHeight(int height) {

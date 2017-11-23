@@ -28,29 +28,29 @@ import java.util.Optional;
  * into the Group and then the Group is set to be the root of this Scene.
  */
 public abstract class Screen extends Scene {
-    /** A list of GameObjects which are handled by the Screen*/
+    /** A list of GameObjects which are handled by the Screen */
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
-    /** A list of all the particles handled by this Screen*/
+    /** A list of all the particles handled by this Screen */
     private ArrayList<Particle> particles = new ArrayList<>();
-    /** All the TMXMap tiles handled by this Screen*/
+    /** All the TMXMap tiles handled by this Screen */
     private ArrayList<Tile> tiles = new ArrayList<>();
-    /** The tiled map for this screen*/
+    /** The tiled map for this screen */
     private TMXMap tmxMap;
-    /** Every Screen has one listener*/
+    /** Every Screen has one listener */
     private InputListener listener;
-    /** The host Game object where this screen was created*/
+    /** The host Game object where this screen was created */
     private Game host;
-    /** An AnimationTimer, which handles the game loop*/
+    /** An AnimationTimer, which handles the game loop */
     private GameLoop gameLoop;
-    /** The music in the scene*/
+    /** The music in the scene */
     private Music music;
-    /** The root Node object, which is set to the Scene as root*/
+    /** The root Node object, which is set to the Scene as root */
     private Group root;
-    /** The javafx canvas, which handles all the drawing*/
+    /** The javafx canvas, which handles all the drawing */
     private Canvas canvas;
-    /** The GraphicsContext of the canvas*/
+    /** The GraphicsContext of the canvas */
     private GraphicsContext gc;
-    /** The camera for the Screen*/
+    /** The camera for the Screen */
     private Camera2D camera2D;
 
     /**

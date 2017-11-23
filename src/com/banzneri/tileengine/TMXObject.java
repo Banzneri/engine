@@ -1,19 +1,33 @@
 package com.banzneri.tileengine;
 
-public class Object {
+/**
+ * Class for the Tiled map object from the object layer.
+ */
+public class TMXObject {
     private double x;
     private double y;
     private double width;
     private double height;
     private String name;
 
-    public Object(double x, double y, double width, double height, String name) {
+    /**
+     * Constructor for the TMXObject.
+     *
+     * @param x The x coordinate of the object
+     * @param y The y coordinate of the object
+     * @param width The width of the object
+     * @param height The height of the object
+     * @param name The name of the object
+     */
+    public TMXObject(double x, double y, double width, double height, String name) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.name = name;
     }
+
+    // GETTERS & SETTERS
 
     public double getX() {
         return x;
